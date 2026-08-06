@@ -1,0 +1,11 @@
+source:
+  input_shm: CTP_MD
+
+engine:
+  worker_count: 4
+  worker_queue_capacity: 4096
+  sink_queue_capacity: 4096
+
+publisher:
+  output_shm: FACTOR_MD
+  output_capacity: 1048576

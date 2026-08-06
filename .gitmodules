@@ -1,0 +1,6 @@
+[submodule "third_party/hft-common"]
+	path = third_party/hft-common
+	url = /home/ruanying/hft-common
+[submodule "third_party/yaml-cpp"]
+	path = third_party/yaml-cpp
+	url = /home/ruanying/hft_md_gateway/third_party/yaml-cpp
