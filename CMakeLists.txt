@@ -30,3 +30,5 @@ target_link_libraries(hft_factor PRIVATE hft_factor_lib)
 set_target_properties(hft_factor PROPERTIES
     RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/bin
 )
+
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/tools)
