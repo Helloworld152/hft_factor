@@ -1,6 +1,6 @@
 # hft_factor
 
-独立的共享内存因子计算项目，采用分层 pipeline 架构。
+独立的共享内存因子计算项目，采用模板化 `FactorComputeEngine` 主链路。
 
 当前依赖：
 
@@ -9,10 +9,10 @@
 
 运行时主链路：
 
-- `RawTickShmSource`：读取 `CTP_MD` 原始行情共享内存
+- `Source`：读取 `CTP_MD` 原始行情共享内存
 - `Dispatcher`：按 `symbol` 哈希到固定 worker
 - `Worker`：维护分片内合约状态并计算基础因子
-- `Sink`：单线程写入 `FACTOR_MD` 共享内存
+- `Publisher`：单线程写入 `FACTOR_MD` 共享内存
 
 当前已实现的基础因子：
 
@@ -61,7 +61,16 @@ publisher:
 
 ## 当前实现说明
 
-当前线程间队列已经切到 `hft-common` 里的进程内固定容量 `SpscQueue`：
+当前顶层由 `FactorComputeEngine` 负责装配 `Source / Dispatcher / Worker / Publisher`。
+
+头文件目录分层：
+
+- `include/hft_factor/runtime/core`：配置与配置加载
+- `include/hft_factor/runtime/components`：`Source / Dispatcher / Worker / Publisher`
+- `include/hft_factor/runtime/engine`：`FactorComputeEngine`
+- `include/hft_factor/runtime/internal`：内部计算支撑结构
+
+线程间队列使用 `hft-common` 里的进程内固定容量 `SpscQueue`：
 
 - `source -> worker[i]`：单生产者单消费者
-- `worker[i] -> sink`：每个 worker 一条独立 SPSC，sink 线程轮询汇总
+- `worker[i] -> publisher`：每个 worker 一条独立 SPSC，publisher 线程轮询汇总

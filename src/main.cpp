@@ -2,12 +2,15 @@
 #include <iostream>
 #include <string>
 
-#include "hft_factor/runtime/config_loader.hpp"
-#include "hft_factor/runtime/factor_pipeline_engine.hpp"
+#include "hft_factor/runtime/engine/factor_compute_engine.hpp"
 
 namespace {
 
-hft_factor::FactorPipelineEngine* g_engine = nullptr;
+hft_factor::FactorComputeEngine<
+    hft_factor::Source,
+    hft_factor::Dispatcher,
+    hft_factor::Worker,
+    hft_factor::Publisher>* g_engine = nullptr;
 
 void on_signal(int) {
     if (g_engine) {
@@ -23,35 +26,26 @@ int main(int argc, char** argv) {
         return 1;
     }
 
-    hft_factor::Config config {};
     const std::string config_path = argv[1];
     try {
-        if (!hft_factor::load_config(config_path, config)) {
-            std::cerr << "failed to load config: " << config_path << std::endl;
+        hft_factor::FactorComputeEngine<
+            hft_factor::Source,
+            hft_factor::Dispatcher,
+            hft_factor::Worker,
+            hft_factor::Publisher> engine;
+        if (!engine.init(config_path)) {
+            std::cerr << "failed to init hft_factor_demo" << std::endl;
             return 1;
         }
+
+        g_engine = &engine;
+        std::signal(SIGINT, on_signal);
+        std::signal(SIGTERM, on_signal);
+
+        engine.run();
     } catch (const std::exception& ex) {
-        std::cerr << "config error: " << ex.what() << std::endl;
+        std::cerr << "init error: " << ex.what() << std::endl;
         return 1;
     }
-
-    hft_factor::FactorPipelineEngine engine;
-    if (!engine.init(config)) {
-        std::cerr << "failed to init hft_factor_demo" << std::endl;
-        return 1;
-    }
-
-    g_engine = &engine;
-    std::signal(SIGINT, on_signal);
-    std::signal(SIGTERM, on_signal);
-
-    std::cout << "hft_factor_demo starting"
-              << " config=" << config_path
-              << " input_shm=" << config.input_shm
-              << " output_shm=" << config.output_shm
-              << " workers=" << config.worker_count
-              << std::endl;
-
-    engine.run();
     return 0;
 }

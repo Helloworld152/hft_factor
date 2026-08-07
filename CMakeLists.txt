@@ -13,17 +13,14 @@ set(YAML_CPP_INSTALL OFF CACHE BOOL "" FORCE)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/third_party/yaml-cpp
     ${CMAKE_CURRENT_BINARY_DIR}/yaml-cpp-build)
 
-add_library(hft_factor_lib
-    src/config_loader.cpp
-    src/factor_pipeline_engine.cpp
-)
+add_library(hft_factor_lib INTERFACE)
 
-target_include_directories(hft_factor_lib PUBLIC
+target_include_directories(hft_factor_lib INTERFACE
     ${CMAKE_CURRENT_SOURCE_DIR}/include
     ${HFT_COMMON_ROOT}/include
 )
 
-target_link_libraries(hft_factor_lib PUBLIC yaml-cpp pthread)
+target_link_libraries(hft_factor_lib INTERFACE yaml-cpp pthread)
 
 add_executable(hft_factor src/main.cpp)
 target_link_libraries(hft_factor PRIVATE hft_factor_lib)
@@ -31,4 +28,6 @@ set_target_properties(hft_factor PROPERTIES
     RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/bin
 )
 
+enable_testing()
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/tests)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/tools)

@@ -4,7 +4,7 @@
 
 #include "hft_factor/model/ctp_shm_tick_record.hpp"
 #include "hft_factor/model/factor_value.hpp"
-#include "hft_factor/runtime/instrument_state.hpp"
+#include "hft_factor/runtime/internal/instrument_state.hpp"
 
 namespace hft_factor {
 

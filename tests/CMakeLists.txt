@@ -1,0 +1,3 @@
+add_executable(factor_compute_engine_test factor_compute_engine_test.cpp)
+target_link_libraries(factor_compute_engine_test PRIVATE hft_factor_lib)
+add_test(NAME factor_compute_engine_test COMMAND factor_compute_engine_test)
