@@ -5,10 +5,10 @@
 #include <unordered_map>
 #include <vector>
 
+#include "hft_common/factor/instrument_state.h"
 #include "hft_factor/model/factor_value.hpp"
 #include "hft_factor/runtime/core/config.hpp"
 #include "hft_factor/runtime/internal/factor_dag_executor.hpp"
-#include "hft_factor/runtime/internal/instrument_state.hpp"
 #include "hft_factor/runtime/internal/tick_task.hpp"
 
 namespace hft_factor {
@@ -30,7 +30,7 @@ public:
     }
 
 private:
-    std::unordered_map<std::string, InstrumentState> states_;
+    std::unordered_map<std::string, hft_common::factor::InstrumentState> states_;
     FactorDagExecutor dag_ {};
 };
 

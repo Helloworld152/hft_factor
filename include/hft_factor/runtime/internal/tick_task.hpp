@@ -2,13 +2,13 @@
 
 #include <cstdint>
 
-#include "hft_factor/model/ctp_shm_tick_record.hpp"
+#include "hft_common/factor/ctp_shm_tick_record.h"
 
 namespace hft_factor {
 
 struct TickTask {
     uint64_t seq {0};
-    CtpShmTickRecord tick {};
+    hft_common::factor::CtpShmTickRecord tick {};
 };
 
 }  // namespace hft_factor

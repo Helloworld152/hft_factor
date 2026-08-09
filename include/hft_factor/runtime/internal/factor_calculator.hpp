@@ -1,18 +1,19 @@
 #pragma once
 
 #include <cstring>
+#include <vector>
 
-#include "hft_factor/model/ctp_shm_tick_record.hpp"
+#include "hft_common/factor/ctp_shm_tick_record.h"
+#include "hft_common/factor/instrument_state.h"
 #include "hft_factor/model/factor_value.hpp"
-#include "hft_factor/runtime/internal/instrument_state.hpp"
 
 namespace hft_factor {
 
 class FactorCalculator {
 public:
     std::vector<FactorValue> compute(uint64_t seq,
-                                     const CtpShmTickRecord& tick,
-                                     const InstrumentState& state) const {
+                                     const hft_common::factor::CtpShmTickRecord& tick,
+                                     const hft_common::factor::InstrumentState& state) const {
         std::vector<FactorValue> out;
         if (state.bid1 > 0.0 && state.ask1 > 0.0) {
             out.push_back(make_value(seq, tick, "mid_price", state.curr_mid_price));
@@ -35,7 +36,7 @@ public:
 
 private:
     FactorValue make_value(uint64_t seq,
-                           const CtpShmTickRecord& tick,
+                           const hft_common::factor::CtpShmTickRecord& tick,
                            const char* factor_id,
                            double value) const {
         FactorValue out {};

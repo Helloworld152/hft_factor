@@ -12,16 +12,18 @@
 #include <unordered_map>
 #include <vector>
 
+#include "hft_common/factor/factor_context.h"
+#include "hft_common/factor/factor_plugin.h"
 #include "hft_factor/runtime/core/config.hpp"
-#include "hft_factor/runtime/internal/factor_graph_context.hpp"
-#include "hft_factor/runtime/internal/factor_node.hpp"
 
 namespace hft_factor {
 
 struct LoadedFactorNode {
     std::string id;
     std::string path;
-    std::unique_ptr<FactorNode, std::function<void(FactorNode*)>> instance;
+    std::unique_ptr<hft_common::factor::FactorNode,
+                    std::function<void(hft_common::factor::FactorNode*)>>
+        instance;
 };
 
 class FactorDagExecutor {
@@ -46,11 +48,11 @@ public:
     }
 
     std::vector<FactorValue> execute(uint64_t seq,
-                                     const CtpShmTickRecord& tick,
-                                     const InstrumentState& state) const {
+                                     const hft_common::factor::CtpShmTickRecord& tick,
+                                     const hft_common::factor::InstrumentState& state) const {
         std::vector<FactorValue> out;
         out.reserve(nodes_.size());
-        FactorGraphContext ctx(seq, tick, state);
+        hft_common::factor::FactorContext ctx(seq, tick, state);
         for (const auto& node : nodes_) {
             double value = 0.0;
             if (!node.instance->evaluate(ctx, value)) {
@@ -160,11 +162,12 @@ private:
         }
 
         dlerror();
-        auto abi_version = reinterpret_cast<FactorPluginAbiVersionFn>(
+        auto abi_version = reinterpret_cast<hft_common::factor::FactorPluginAbiVersionFn>(
             dlsym(handle, "factor_plugin_abi_version"));
-        auto create = reinterpret_cast<CreateFactorNodeFn>(dlsym(handle, "create_factor_node"));
-        auto destroy =
-            reinterpret_cast<DestroyFactorNodeFn>(dlsym(handle, "destroy_factor_node"));
+        auto create = reinterpret_cast<hft_common::factor::CreateFactorNodeFn>(
+            dlsym(handle, "create_factor_node"));
+        auto destroy = reinterpret_cast<hft_common::factor::DestroyFactorNodeFn>(
+            dlsym(handle, "destroy_factor_node"));
         const char* symbol_error = dlerror();
         if (symbol_error != nullptr || abi_version == nullptr || create == nullptr ||
             destroy == nullptr) {
@@ -172,12 +175,12 @@ private:
             throw std::runtime_error("plugin symbols missing for " + config.path);
         }
 
-        if (abi_version() != kFactorPluginAbiVersion) {
+        if (abi_version() != hft_common::factor::kFactorPluginAbiVersion) {
             dlclose(handle);
             throw std::runtime_error("plugin abi mismatch for " + config.path);
         }
 
-        FactorNode* raw = create();
+        hft_common::factor::FactorNode* raw = create();
         if (raw == nullptr) {
             dlclose(handle);
             throw std::runtime_error("create_factor_node returned null for " + config.path);
@@ -188,7 +191,7 @@ private:
         loaded.path = config.path;
         loaded.instance = {
             raw,
-            [handle, destroy](FactorNode* node) {
+            [handle, destroy](hft_common::factor::FactorNode* node) {
                 if (node != nullptr) {
                     destroy(node);
                 }

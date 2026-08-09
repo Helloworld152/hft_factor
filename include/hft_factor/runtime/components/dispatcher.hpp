@@ -4,7 +4,7 @@
 #include <functional>
 #include <string>
 
-#include "hft_factor/model/ctp_shm_tick_record.hpp"
+#include "hft_common/factor/ctp_shm_tick_record.h"
 #include "hft_factor/runtime/core/config.hpp"
 
 namespace hft_factor {
@@ -18,7 +18,7 @@ public:
         return worker_count_ > 0;
     }
 
-    std::size_t route(const CtpShmTickRecord& tick) const {
+    std::size_t route(const hft_common::factor::CtpShmTickRecord& tick) const {
         const std::string key = symbol_key(tick.symbol, sizeof(tick.symbol));
         return std::hash<std::string>{}(key) % worker_count_;
     }

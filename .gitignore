@@ -1,6 +1,7 @@
 .cache/
 bin/
 build/
+plans/
 
 compile_commands.json
 
