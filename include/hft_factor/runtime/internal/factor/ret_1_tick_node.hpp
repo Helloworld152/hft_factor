@@ -6,11 +6,15 @@ namespace hft_factor {
 
 class Ret1TickNode final : public FactorNode {
 public:
-    void evaluate(FactorGraphContext& ctx) const override {
+    const char* factor_id() const override { return "ret_1_tick"; }
+
+    bool evaluate(const FactorGraphContext& ctx, double& out) const override {
         if (ctx.state->initialized && ctx.state->last_mid_price > 0.0 &&
             ctx.state->curr_mid_price > 0.0) {
-            ctx.out->ret_1_tick = ctx.state->curr_mid_price / ctx.state->last_mid_price - 1.0;
+            out = ctx.state->curr_mid_price / ctx.state->last_mid_price - 1.0;
+            return true;
         }
+        return false;
     }
 };
 

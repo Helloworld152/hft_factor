@@ -1,3 +1,13 @@
 add_executable(factor_compute_engine_test factor_compute_engine_test.cpp)
 target_link_libraries(factor_compute_engine_test PRIVATE hft_factor_lib)
+target_compile_definitions(factor_compute_engine_test PRIVATE
+    HFT_FACTOR_PLUGIN_DIR="${HFT_FACTOR_PLUGIN_OUTPUT_DIR}"
+)
 add_test(NAME factor_compute_engine_test COMMAND factor_compute_engine_test)
+
+add_executable(factor_dag_config_test factor_dag_config_test.cpp)
+target_link_libraries(factor_dag_config_test PRIVATE hft_factor_lib)
+target_compile_definitions(factor_dag_config_test PRIVATE
+    HFT_FACTOR_PLUGIN_DIR="${HFT_FACTOR_PLUGIN_OUTPUT_DIR}"
+)
+add_test(NAME factor_dag_config_test COMMAND factor_dag_config_test)

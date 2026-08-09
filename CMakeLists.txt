@@ -20,7 +20,10 @@ target_include_directories(hft_factor_lib INTERFACE
     ${HFT_COMMON_ROOT}/include
 )
 
-target_link_libraries(hft_factor_lib INTERFACE yaml-cpp pthread)
+target_link_libraries(hft_factor_lib INTERFACE yaml-cpp pthread dl)
+
+set(HFT_FACTOR_PLUGIN_OUTPUT_DIR ${CMAKE_CURRENT_SOURCE_DIR}/bin/plugins)
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/plugins)
 
 add_executable(hft_factor src/main.cpp)
 target_link_libraries(hft_factor PRIVATE hft_factor_lib)

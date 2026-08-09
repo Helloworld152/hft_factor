@@ -6,13 +6,16 @@ namespace hft_factor {
 
 class BookImbalanceNode final : public FactorNode {
 public:
-    void evaluate(FactorGraphContext& ctx) const override {
+    const char* factor_id() const override { return "book_imbalance"; }
+
+    bool evaluate(const FactorGraphContext& ctx, double& out) const override {
         const double total_volume =
             static_cast<double>(ctx.state->bid_vol1 + ctx.state->ask_vol1);
         if (total_volume > 0.0) {
-            ctx.out->book_imbalance =
-                static_cast<double>(ctx.state->bid_vol1 - ctx.state->ask_vol1) / total_volume;
+            out = static_cast<double>(ctx.state->bid_vol1 - ctx.state->ask_vol1) / total_volume;
+            return true;
         }
+        return false;
     }
 };
 

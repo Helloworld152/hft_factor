@@ -6,10 +6,14 @@ namespace hft_factor {
 
 class MidPriceNode final : public FactorNode {
 public:
-    void evaluate(FactorGraphContext& ctx) const override {
+    const char* factor_id() const override { return "mid_price"; }
+
+    bool evaluate(const FactorGraphContext& ctx, double& out) const override {
         if (ctx.state->bid1 > 0.0 && ctx.state->ask1 > 0.0) {
-            ctx.out->mid_price = ctx.state->curr_mid_price;
+            out = ctx.state->curr_mid_price;
+            return true;
         }
+        return false;
     }
 };
 

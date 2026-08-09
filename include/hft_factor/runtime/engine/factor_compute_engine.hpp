@@ -3,6 +3,7 @@
 #include <atomic>
 #include <chrono>
 #include <cstddef>
+#include <iostream>
 #include <memory>
 #include <stdexcept>
 #include <thread>
@@ -42,11 +43,20 @@ public:
             config.output_capacity == 0 ||
             config.worker_queue_capacity < 2 ||
             config.sink_queue_capacity < 2) {
+            std::cerr << "[hft_factor] invalid engine config: worker_count=" << config.worker_count
+                      << " output_capacity=" << config.output_capacity
+                      << " worker_queue_capacity=" << config.worker_queue_capacity
+                      << " sink_queue_capacity=" << config.sink_queue_capacity << std::endl;
             return false;
         }
 
+        std::cout << "[hft_factor] init engine: workers=" << config.worker_count
+                  << " worker_queue_capacity=" << config.worker_queue_capacity
+                  << " sink_queue_capacity=" << config.sink_queue_capacity
+                  << " output_capacity=" << config.output_capacity << std::endl;
         config_ = config;
         if (!source_.init(config_) || !dispatcher_.init(config_) || !publisher_.init(config_)) {
+            std::cerr << "[hft_factor] source/dispatcher/publisher init failed" << std::endl;
             return false;
         }
 
@@ -58,6 +68,7 @@ public:
         for (std::size_t i = 0; i < config_.worker_count; ++i) {
             auto worker = std::make_unique<WorkerT>();
             if (!worker->init(config_)) {
+                std::cerr << "[hft_factor] worker init failed: worker_id=" << i << std::endl;
                 return false;
             }
             workers_.push_back(std::move(worker));
@@ -65,6 +76,8 @@ public:
             sink_queues_.push_back(std::make_unique<SpscQueue<FactorValue>>(config_.sink_queue_capacity));
         }
 
+        std::cout << "[hft_factor] workers initialized: count=" << workers_.size() << std::endl;
+        std::cout << "[hft_factor] engine init complete" << std::endl;
         return true;
     }
 
@@ -77,6 +90,7 @@ public:
             throw std::runtime_error("engine not initialized");
         }
 
+        std::cout << "[hft_factor] launching threads: workers=" << workers_.size() << std::endl;
         running_.store(true, std::memory_order_release);
 
         publisher_thread_ = std::thread(&FactorComputeEngine::publisher_loop, this);
@@ -95,9 +109,13 @@ public:
         if (publisher_thread_.joinable()) {
             publisher_thread_.join();
         }
+        std::cout << "[hft_factor] all threads joined" << std::endl;
     }
 
     void stop() {
+        if (running_.load(std::memory_order_acquire)) {
+            std::cout << "[hft_factor] stop requested" << std::endl;
+        }
         running_.store(false, std::memory_order_release);
     }
 
@@ -128,9 +146,11 @@ private:
                 continue;
             }
 
-            FactorValue factor = worker.process(task);
-            while (running_.load(std::memory_order_acquire) && !output_queue.push(factor)) {
-                std::this_thread::sleep_for(std::chrono::microseconds(1));
+            std::vector<FactorValue> factors = worker.process(task);
+            for (const auto& factor : factors) {
+                while (running_.load(std::memory_order_acquire) && !output_queue.push(factor)) {
+                    std::this_thread::sleep_for(std::chrono::microseconds(1));
+                }
             }
         }
     }

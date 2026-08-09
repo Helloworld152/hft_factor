@@ -12,13 +12,11 @@ struct FactorGraphContext {
     uint64_t seq {0};
     const CtpShmTickRecord* tick {nullptr};
     const InstrumentState* state {nullptr};
-    FactorValue* out {nullptr};
 
     FactorGraphContext(uint64_t seq_in,
                        const CtpShmTickRecord& tick_in,
-                       const InstrumentState& state_in,
-                       FactorValue& out_in)
-        : seq(seq_in), tick(&tick_in), state(&state_in), out(&out_in) {}
+                       const InstrumentState& state_in)
+        : seq(seq_in), tick(&tick_in), state(&state_in) {}
 };
 
 }  // namespace hft_factor

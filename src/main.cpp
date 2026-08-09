@@ -13,6 +13,7 @@ hft_factor::FactorComputeEngine<
     hft_factor::Publisher>* g_engine = nullptr;
 
 void on_signal(int) {
+    std::cerr << "[hft_factor] signal received, stopping engine" << std::endl;
     if (g_engine) {
         g_engine->stop();
     }
@@ -27,6 +28,7 @@ int main(int argc, char** argv) {
     }
 
     const std::string config_path = argv[1];
+    std::cout << "[hft_factor] starting with config: " << config_path << std::endl;
     try {
         hft_factor::FactorComputeEngine<
             hft_factor::Source,
@@ -37,12 +39,15 @@ int main(int argc, char** argv) {
             std::cerr << "failed to init hft_factor_demo" << std::endl;
             return 1;
         }
+        std::cout << "[hft_factor] init succeeded" << std::endl;
 
         g_engine = &engine;
         std::signal(SIGINT, on_signal);
         std::signal(SIGTERM, on_signal);
 
+        std::cout << "[hft_factor] engine running" << std::endl;
         engine.run();
+        std::cout << "[hft_factor] engine stopped" << std::endl;
     } catch (const std::exception& ex) {
         std::cerr << "init error: " << ex.what() << std::endl;
         return 1;

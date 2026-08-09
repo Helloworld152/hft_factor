@@ -145,11 +145,13 @@ int main(int argc, char** argv) {
 
                 std::cout << "[seq " << std::right << std::setw(8) << next_seq << "] "
                           << std::left << std::setw(10) << symbol
-                          << " t=" << value->update_time
-                          << " mid=" << std::fixed << std::setprecision(6) << value->mid_price
-                          << " spread=" << value->spread
-                          << " imbalance=" << value->book_imbalance
-                          << " ret_1=" << value->ret_1_tick
+                          << " t=" << value->update_time;
+
+                char factor_id[sizeof(value->factor_id) + 1] {};
+                std::memcpy(factor_id, value->factor_id, sizeof(value->factor_id));
+
+                std::cout << " factor=" << factor_id
+                          << " value=" << std::fixed << std::setprecision(6) << value->value
                           << std::endl;
             }
         }

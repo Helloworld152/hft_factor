@@ -9,3 +9,21 @@ engine:
 publisher:
   output_shm: FACTOR_MD
   output_capacity: 1048576
+
+factor_graph:
+  nodes:
+    - id: mid_price
+      path: ./bin/plugins/libmid_price_factor_plugin.so
+      deps: []
+
+    - id: spread
+      path: ./bin/plugins/libspread_factor_plugin.so
+      deps: [mid_price]
+
+    - id: book_imbalance
+      path: ./bin/plugins/libbook_imbalance_factor_plugin.so
+      deps: []
+
+    - id: ret_1_tick
+      path: ./bin/plugins/libret_1_tick_factor_plugin.so
+      deps: [mid_price]
