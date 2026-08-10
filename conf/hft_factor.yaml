@@ -13,17 +13,17 @@ publisher:
 factor_graph:
   nodes:
     - id: mid_price
-      path: ./bin/plugins/libmid_price_factor_plugin.so
+      path: ./bin/plugins/libmid_price_factor.so
       deps: []
 
     - id: spread
-      path: ./bin/plugins/libspread_factor_plugin.so
+      path: ./bin/plugins/libspread_factor.so
       deps: [mid_price]
 
     - id: book_imbalance
-      path: ./bin/plugins/libbook_imbalance_factor_plugin.so
+      path: ./bin/plugins/libbook_imbalance_factor.so
       deps: []
 
     - id: ret_1_tick
-      path: ./bin/plugins/libret_1_tick_factor_plugin.so
+      path: ./bin/plugins/libret_1_tick_factor.so
       deps: [mid_price]
