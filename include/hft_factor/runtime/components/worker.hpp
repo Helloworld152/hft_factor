@@ -5,13 +5,15 @@
 #include <unordered_map>
 #include <vector>
 
+#include "hft_common/factor/factor_value.h"
 #include "hft_common/factor/instrument_state.h"
-#include "hft_factor/model/factor_value.hpp"
 #include "hft_factor/runtime/core/config.hpp"
 #include "hft_factor/runtime/internal/factor_dag_executor.hpp"
 #include "hft_factor/runtime/internal/tick_task.hpp"
 
 namespace hft_factor {
+
+using hft_common::factor::FactorValue;
 
 class Worker {
 public:

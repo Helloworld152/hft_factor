@@ -14,9 +14,13 @@
 
 #include "hft_common/factor/factor_context.h"
 #include "hft_common/factor/factor_plugin.h"
+#include "hft_common/factor/factor_value.h"
+#include "hft_common/time/time_utils.h"
 #include "hft_factor/runtime/core/config.hpp"
 
 namespace hft_factor {
+
+using hft_common::factor::FactorValue;
 
 struct LoadedFactorNode {
     std::string id;
@@ -48,7 +52,7 @@ public:
     }
 
     std::vector<FactorValue> execute(uint64_t seq,
-                                     const hft_common::factor::CtpShmTickRecord& tick,
+                                     const hft_common::market_data::MarketSnapshot& tick,
                                      const hft_common::factor::InstrumentState& state) const {
         std::vector<FactorValue> out;
         out.reserve(nodes_.size());
@@ -61,8 +65,8 @@ public:
 
             FactorValue item {};
             std::memcpy(item.symbol, tick.symbol, sizeof(tick.symbol));
-            item.seq = seq;
-            item.update_time = tick.update_time;
+            item.local_ts = hft_common::time::local_timestamp_yyyymmddhhmmssmmm();
+            item.exchange_ts = tick.exchange_ts;
             std::snprintf(item.factor_id, sizeof(item.factor_id), "%s", node.instance->factor_id());
             item.value = value;
             out.push_back(item);

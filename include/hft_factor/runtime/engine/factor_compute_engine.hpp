@@ -10,7 +10,7 @@
 #include <vector>
 
 #include "hft_common/base/queue.h"
-#include "hft_factor/model/factor_value.hpp"
+#include "hft_common/factor/factor_value.h"
 #include "hft_factor/runtime/components/dispatcher.hpp"
 #include "hft_factor/runtime/components/publisher.hpp"
 #include "hft_factor/runtime/components/source.hpp"
@@ -20,6 +20,8 @@
 #include "hft_factor/runtime/internal/tick_task.hpp"
 
 namespace hft_factor {
+
+using hft_common::factor::FactorValue;
 
 template <typename SourceT = Source,
           typename DispatcherT = Dispatcher,

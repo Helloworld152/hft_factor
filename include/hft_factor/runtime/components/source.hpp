@@ -4,8 +4,8 @@
 #include <memory>
 #include <thread>
 
-#include "hft_common/factor/ctp_shm_tick_record.h"
 #include "hft_common/ipc/shm_ring_buffer.h"
+#include "hft_common/market_data/market_snapshot.h"
 #include "hft_factor/runtime/core/config.hpp"
 #include "hft_factor/runtime/internal/tick_task.hpp"
 
@@ -17,7 +17,7 @@ public:
 
     bool init(const Config& config) {
         reader_ = std::make_unique<
-            hft_common::ipc::ShmRingBuffer<hft_common::factor::CtpShmTickRecord>>(
+            hft_common::ipc::ShmRingBuffer<hft_common::market_data::MarketSnapshot>>(
             config.input_shm, false);
         return true;
     }
@@ -42,7 +42,7 @@ public:
     }
 
 private:
-    std::unique_ptr<hft_common::ipc::ShmRingBuffer<hft_common::factor::CtpShmTickRecord>>
+    std::unique_ptr<hft_common::ipc::ShmRingBuffer<hft_common::market_data::MarketSnapshot>>
         reader_;
 };
 

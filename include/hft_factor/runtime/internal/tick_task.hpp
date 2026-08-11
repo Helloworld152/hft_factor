@@ -2,13 +2,13 @@
 
 #include <cstdint>
 
-#include "hft_common/factor/ctp_shm_tick_record.h"
+#include "hft_common/market_data/market_snapshot.h"
 
 namespace hft_factor {
 
 struct TickTask {
     uint64_t seq {0};
-    hft_common::factor::CtpShmTickRecord tick {};
+    hft_common::market_data::MarketSnapshot tick {};
 };
 
 }  // namespace hft_factor

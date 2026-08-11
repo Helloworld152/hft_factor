@@ -12,8 +12,8 @@
 #include <sys/stat.h>
 #include <unistd.h>
 
+#include "hft_common/factor/factor_value.h"
 #include "hft_common/ipc/shm_ring_buffer.h"
-#include "hft_factor/model/factor_value.hpp"
 
 namespace {
 
@@ -66,7 +66,7 @@ std::string format_bytes(uint64_t bytes) {
 }
 
 void print_basic_info(const std::string& shm_name,
-                      const hft_common::ipc::ShmRingBuffer<hft_factor::FactorValue>& reader) {
+                      const hft_common::ipc::ShmRingBuffer<hft_common::factor::FactorValue>& reader) {
     const uint64_t capacity = reader.get_capacity();
     const uint64_t latest = reader.latest_seq();
     const uint64_t oldest = latest >= capacity ? (latest - capacity + 1) : 1;
@@ -120,7 +120,7 @@ int main(int argc, char** argv) {
     }
 
     try {
-        hft_common::ipc::ShmRingBuffer<hft_factor::FactorValue> reader(shm_name, false);
+        hft_common::ipc::ShmRingBuffer<hft_common::factor::FactorValue> reader(shm_name, false);
         if (!has_start) {
             print_basic_info(shm_name, reader);
             return 0;
@@ -135,7 +135,7 @@ int main(int argc, char** argv) {
             }
 
             for (; next_seq <= latest; ++next_seq) {
-                const hft_factor::FactorValue* value = reader.read(next_seq);
+                const hft_common::factor::FactorValue* value = reader.read(next_seq);
                 if (!value) {
                     continue;
                 }
@@ -145,7 +145,8 @@ int main(int argc, char** argv) {
 
                 std::cout << "[seq " << std::right << std::setw(8) << next_seq << "] "
                           << std::left << std::setw(10) << symbol
-                          << " t=" << value->update_time;
+                          << " local_t=" << value->local_ts
+                          << " exchange_t=" << value->exchange_ts;
 
                 char factor_id[sizeof(value->factor_id) + 1] {};
                 std::memcpy(factor_id, value->factor_id, sizeof(value->factor_id));

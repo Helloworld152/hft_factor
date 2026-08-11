@@ -3,16 +3,19 @@
 #include <cstring>
 #include <vector>
 
-#include "hft_common/factor/ctp_shm_tick_record.h"
+#include "hft_common/factor/factor_value.h"
 #include "hft_common/factor/instrument_state.h"
-#include "hft_factor/model/factor_value.hpp"
+#include "hft_common/market_data/market_snapshot.h"
+#include "hft_common/time/time_utils.h"
 
 namespace hft_factor {
+
+using hft_common::factor::FactorValue;
 
 class FactorCalculator {
 public:
     std::vector<FactorValue> compute(uint64_t seq,
-                                     const hft_common::factor::CtpShmTickRecord& tick,
+                                     const hft_common::market_data::MarketSnapshot& tick,
                                      const hft_common::factor::InstrumentState& state) const {
         std::vector<FactorValue> out;
         if (state.bid1 > 0.0 && state.ask1 > 0.0) {
@@ -36,13 +39,14 @@ public:
 
 private:
     FactorValue make_value(uint64_t seq,
-                           const hft_common::factor::CtpShmTickRecord& tick,
+                           const hft_common::market_data::MarketSnapshot& tick,
                            const char* factor_id,
                            double value) const {
         FactorValue out {};
         std::memcpy(out.symbol, tick.symbol, sizeof(tick.symbol));
-        out.seq = seq;
-        out.update_time = tick.update_time;
+        (void)seq;
+        out.local_ts = hft_common::time::local_timestamp_yyyymmddhhmmssmmm();
+        out.exchange_ts = tick.exchange_ts;
         std::snprintf(out.factor_id, sizeof(out.factor_id), "%s", factor_id);
         out.value = value;
         return out;
