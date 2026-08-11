@@ -25,7 +25,12 @@ public:
     bool next(uint64_t& next_seq, TickTask& task) {
         const uint64_t latest = reader_->latest_seq();
         if (next_seq == 0) {
-            next_seq = latest > 0 ? latest : 1;
+            if (latest == 0) {
+                next_seq = 1;
+            } else {
+                const uint64_t capacity = reader_->get_capacity();
+                next_seq = latest >= capacity ? (latest - capacity + 1) : 1;
+            }
         }
         if (next_seq > latest) {
             std::this_thread::sleep_for(std::chrono::microseconds(50));

@@ -6,7 +6,6 @@
 #include "hft_common/factor/factor_value.h"
 #include "hft_common/factor/instrument_state.h"
 #include "hft_common/market_data/market_snapshot.h"
-#include "hft_common/time/time_utils.h"
 
 namespace hft_factor {
 
@@ -45,7 +44,7 @@ private:
         FactorValue out {};
         std::memcpy(out.symbol, tick.symbol, sizeof(tick.symbol));
         (void)seq;
-        out.local_ts = hft_common::time::local_timestamp_yyyymmddhhmmssmmm();
+        out.local_ts = tick.local_ts;
         out.exchange_ts = tick.exchange_ts;
         std::snprintf(out.factor_id, sizeof(out.factor_id), "%s", factor_id);
         out.value = value;

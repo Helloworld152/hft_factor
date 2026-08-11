@@ -15,7 +15,6 @@
 #include "hft_common/factor/factor_context.h"
 #include "hft_common/factor/factor_plugin.h"
 #include "hft_common/factor/factor_value.h"
-#include "hft_common/time/time_utils.h"
 #include "hft_factor/runtime/core/config.hpp"
 
 namespace hft_factor {
@@ -65,7 +64,7 @@ public:
 
             FactorValue item {};
             std::memcpy(item.symbol, tick.symbol, sizeof(tick.symbol));
-            item.local_ts = hft_common::time::local_timestamp_yyyymmddhhmmssmmm();
+            item.local_ts = tick.local_ts;
             item.exchange_ts = tick.exchange_ts;
             std::snprintf(item.factor_id, sizeof(item.factor_id), "%s", node.instance->factor_id());
             item.value = value;
