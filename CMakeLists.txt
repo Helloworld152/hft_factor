@@ -5,6 +5,10 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
+if(NOT CMAKE_CONFIGURATION_TYPES AND NOT CMAKE_BUILD_TYPE)
+    set(CMAKE_BUILD_TYPE Release CACHE STRING "Build type" FORCE)
+endif()
+
 set(HFT_COMMON_ROOT ${CMAKE_CURRENT_SOURCE_DIR}/third_party/hft-common)
 
 set(YAML_CPP_BUILD_TESTS OFF CACHE BOOL "" FORCE)
@@ -28,6 +32,12 @@ add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/plugins)
 add_executable(hft_factor src/main.cpp)
 target_link_libraries(hft_factor PRIVATE hft_factor_lib)
 set_target_properties(hft_factor PROPERTIES
+    RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/bin
+)
+
+add_executable(hft_factor_single_thread src/main_single_thread.cpp)
+target_link_libraries(hft_factor_single_thread PRIVATE hft_factor_lib)
+set_target_properties(hft_factor_single_thread PROPERTIES
     RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/bin
 )
 
